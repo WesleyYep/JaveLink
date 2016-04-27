@@ -1,5 +1,7 @@
 package eu.sathra.mavlink;
 
+import java.nio.ByteBuffer;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -7,6 +9,7 @@ import eu.sathra.mavlink.MavLink.MSG_ATTITUDE;
 import eu.sathra.mavlink.MavLink.MSG_HEARTBEAT;
 import eu.sathra.mavlink.MavLink.MSG_SYS_STATUS;
 import eu.sathra.mavlink.MavLink.Message;
+import jssc.SerialPortList;
 
 /*
  * Class representing Micro Air Vehicle
@@ -300,5 +303,13 @@ public class MAV {
 			short thrust) {
 		MavLink.MSG_MANUAL_CONTROL message = new MavLink.MSG_MANUAL_CONTROL(
 				(short) 0, (short) 0, pitch, roll, thrust, yaw, 0, 0);
+		byte[] bytes = message.encode();
+		System.out.println(Arrays.toString(bytes));
+		SerialPortCommunicator spc = new SerialPortCommunicator();
+		System.out.println("Trying to open " + SerialPortList.getPortNames()[0]);
+		spc.openPort(SerialPortList.getPortNames()[0]);
+		spc.writeData(bytes);
+		spc.closePort();
+
 	}
 }
