@@ -44,6 +44,21 @@ public class SerialPortCommunicator {
 			return false;
 		}
 	}
+	
+	public byte[] readData() {
+		if (currentSerialPort != null && currentSerialPort.isOpened() == true) {
+			//System.out.println(System.currentTimeMillis());
+			try {
+				return currentSerialPort.readBytes();
+				//System.out.println(System.currentTimeMillis());
+			} catch (SerialPortException e) {
+				e.printStackTrace();
+			}
+		} else {
+			System.out.println("port is closed");
+		}
+		return null;
+	}
 
 	public boolean closePort() {
 		try {

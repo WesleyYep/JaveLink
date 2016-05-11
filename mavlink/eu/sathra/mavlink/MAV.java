@@ -30,8 +30,7 @@ public class MAV {
 
 			SensorStatus otherStatus = (SensorStatus) other;
 
-			return otherStatus.isEnabled == isEnabled
-					&& otherStatus.isPresent == isPresent
+			return otherStatus.isEnabled == isEnabled && otherStatus.isPresent == isPresent
 					&& otherStatus.isOperational == isOperational;
 		}
 	}
@@ -52,10 +51,8 @@ public class MAV {
 
 			Attitude otherAttitude = (Attitude) other;
 
-			return otherAttitude.roll == roll && otherAttitude.pitch == pitch
-					&& otherAttitude.yaw == yaw
-					&& otherAttitude.rollSpeed == rollSpeed
-					&& otherAttitude.pitchSpeed == pitchSpeed
+			return otherAttitude.roll == roll && otherAttitude.pitch == pitch && otherAttitude.yaw == yaw
+					&& otherAttitude.rollSpeed == rollSpeed && otherAttitude.pitchSpeed == pitchSpeed
 					&& otherAttitude.yawSpeed == yawSpeed;
 		}
 	}
@@ -73,8 +70,7 @@ public class MAV {
 
 			BatteryStatus otherStatus = (BatteryStatus) other;
 
-			return otherStatus.voltageBattery == voltageBattery
-					&& otherStatus.currentBattery == currentBattery
+			return otherStatus.voltageBattery == voltageBattery && otherStatus.currentBattery == currentBattery
 					&& otherStatus.batteryRemaining == batteryRemaining;
 		}
 	}
@@ -171,8 +167,7 @@ public class MAV {
 		 * Check for packet loss
 		 */
 		short sequence = msg.getSequenceIndex();
-		int lostPacketCount = sequence - (mSequenceIndex + 1)
-				% MAX_SEQUENCE_INDEX;
+		int lostPacketCount = sequence - (mSequenceIndex + 1) % MAX_SEQUENCE_INDEX;
 
 		if (lostPacketCount > 0 && mSequenceIndex != DATA_NOT_AVAILABLE) {
 			mPacketLossCount += lostPacketCount;
@@ -221,12 +216,9 @@ public class MAV {
 			int sensorId = 1 << (c + 1);
 			SensorStatus previousSensorStatus = getSensorStatus(sensorId);
 
-			mOnboardControlSensorsPresent = msg
-					.getOnboard_control_sensors_present();
-			mOnboardControlSensorsEnabled = msg
-					.getOnboard_control_sensors_enabled();
-			mOnboardControlSensorsHealth = msg
-					.getOnboard_control_sensors_health();
+			mOnboardControlSensorsPresent = msg.getOnboard_control_sensors_present();
+			mOnboardControlSensorsEnabled = msg.getOnboard_control_sensors_enabled();
+			mOnboardControlSensorsHealth = msg.getOnboard_control_sensors_health();
 
 			SensorStatus currentSensorStatus = getSensorStatus(sensorId);
 
@@ -236,8 +228,7 @@ public class MAV {
 			if (!currentSensorStatus.equals(previousSensorStatus)) {
 
 				for (MAVListener listener : mListeners) {
-					listener.onSensorStatusChanged(previousSensorStatus,
-							currentSensorStatus);
+					listener.onSensorStatusChanged(previousSensorStatus, currentSensorStatus);
 				}
 			}
 		}
@@ -254,8 +245,7 @@ public class MAV {
 
 		if (!mBatteryStatus.equals(previousBatteryStatus)) {
 			for (MAVListener listener : mListeners) {
-				listener.onBatteryStatusChanged(previousBatteryStatus,
-						mBatteryStatus);
+				listener.onBatteryStatusChanged(previousBatteryStatus, mBatteryStatus);
 			}
 		}
 	}
@@ -301,14 +291,24 @@ public class MAV {
 
 	public void sendManualControl(short roll, short pitch, short yaw,
 			short thrust) {
-		MavLink.MSG_MANUAL_CONTROL message = new MavLink.MSG_MANUAL_CONTROL(
-				(short) 0, (short) 0, pitch, roll, thrust, yaw, 0, 0);
+		
+//		MavLink.MSG_MANUAL_CONTROL message = new MavLink.MSG_MANUAL_CONTROL((short) 0, (short) 0, pitch, roll, thrust, yaw, 0, 0);
+		
+		MavLink.MSG_REQUEST_DATA_STREAM message = new MavLink.MSG_REQUEST_DATA_STREAM((short) 0, (short) 0, 10, 1, 1, 1, 1);
+		
 		byte[] bytes = message.encode();
-		System.out.println(Arrays.toString(bytes));
+		
+		for (int j=0; j<bytes.length; j++) {
+		   System.out.format("%02X ", bytes[j]);
+		}
+		
+		System.out.println();
 		SerialPortCommunicator spc = new SerialPortCommunicator();
 		System.out.println("Trying to open " + SerialPortList.getPortNames()[0]);
 		spc.openPort(SerialPortList.getPortNames()[0]);
 		spc.writeData(bytes);
+		spc.readData();
+		
 		spc.closePort();
 
 	}
