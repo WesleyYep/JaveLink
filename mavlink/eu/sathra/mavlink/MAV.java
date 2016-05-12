@@ -1,5 +1,8 @@
 package eu.sathra.mavlink;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -294,22 +297,33 @@ public class MAV {
 		
 //		MavLink.MSG_MANUAL_CONTROL message = new MavLink.MSG_MANUAL_CONTROL((short) 0, (short) 0, pitch, roll, thrust, yaw, 0, 0);
 		
-		MavLink.MSG_REQUEST_DATA_STREAM message = new MavLink.MSG_REQUEST_DATA_STREAM((short) 0, (short) 0, 10, 1, 1, 1, 1);
+		MavLink.MSG_REQUEST_DATA_STREAM message = new MavLink.MSG_REQUEST_DATA_STREAM((short) 1, (short) 1, 10, 1, 1, 1, 1);
 		
 		byte[] bytes = message.encode();
-		
-		for (int j=0; j<bytes.length; j++) {
-		   System.out.format("%02X ", bytes[j]);
+
+		for (byte aByte : bytes) {
+			System.out.format("%02X ", aByte);
 		}
 		
 		System.out.println();
 		SerialPortCommunicator spc = new SerialPortCommunicator();
 		System.out.println("Trying to open " + SerialPortList.getPortNames()[0]);
 		spc.openPort(SerialPortList.getPortNames()[0]);
-		spc.writeData(bytes);
-		spc.readData();
-		
-		spc.closePort();
 
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+
+		try {
+			while (!br.readLine().equals("q")) {
+                spc.writeData(bytes);
+				System.out.println("Sent");
+				byte[] data = spc.readData();
+				for (byte aByte : data) {
+					System.out.format("%02X ", aByte);
+				}            }
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		spc.closePort();
+		System.out.println("finished");
 	}
 }

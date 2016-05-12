@@ -30,7 +30,7 @@ public class SerialPortCommunicator {
 
 
 	public boolean writeData(byte[] data) {
-		if (currentSerialPort != null && currentSerialPort.isOpened() == true) {
+		if (currentSerialPort != null && currentSerialPort.isOpened()) {
 			//System.out.println(System.currentTimeMillis());
 			try {
 				currentSerialPort.writeBytes(data);
@@ -46,7 +46,7 @@ public class SerialPortCommunicator {
 	}
 	
 	public byte[] readData() {
-		if (currentSerialPort != null && currentSerialPort.isOpened() == true) {
+		if (currentSerialPort != null && currentSerialPort.isOpened()) {
 			//System.out.println(System.currentTimeMillis());
 			try {
 				return currentSerialPort.readBytes();
