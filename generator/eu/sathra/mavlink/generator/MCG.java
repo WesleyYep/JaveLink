@@ -45,7 +45,8 @@ public class MCG {
 	public static void main(String[] args) {
 
 		try {
-			Document myDocument = loadMavlinkXML(args[0]);
+			//	Document myDocument = loadMavlinkXML(args[0]);
+			Document myDocument = loadMavlinkXML("common.xml");
 
 			VelocityEngine velocity = initVelocityEngine();
 			VelocityContext context = new VelocityContext();
