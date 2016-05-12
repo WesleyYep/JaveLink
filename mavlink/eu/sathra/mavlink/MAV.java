@@ -311,15 +311,18 @@ public class MAV {
 		spc.openPort(SerialPortList.getPortNames()[0]);
 
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+		Reader reader = new Reader();
+		reader.read(spc);
 
 		try {
 			while (!br.readLine().equals("q")) {
                 spc.writeData(bytes);
 				System.out.println("Sent");
-				byte[] data = spc.readData();
-				for (byte aByte : data) {
-					System.out.format("%02X ", aByte);
-				}            }
+//				byte[] data = spc.readData();
+//				for (byte aByte : data) {
+//					System.out.format("%02X ", aByte);
+//				}            
+			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
